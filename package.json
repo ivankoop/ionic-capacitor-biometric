@@ -1,0 +1,48 @@
+{
+  "name": "ionic-capacitor-biometric",
+  "version": "1.0.0",
+  "description": "Ionic Capacitor Biometric authentication plugin",
+  "main": "index.ts",
+  "author": "Ivan Koop",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@capacitor/core": "^6.1.2",
+    "typescript": "^5.6.2"
+  },
+  "scripts": {
+    "build": "yarn run clean && tsc",
+    "clean": "rm -rf ./dist",
+    "watch": "tsc --watch",
+    "prepublishOnly": "yarn run build",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx"
+  },
+  "files": [
+    "dist/",
+    "ios/",
+    "android/",
+    "IonicCapacitorBiometric.podspec"
+  ],
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    },
+    "android": {
+      "src": "android"
+    }
+  },
+  "devDependencies": {
+    "@capacitor/ios": "^6.1.2",
+    "@capacitor/android": "^6.1.2",
+    "@typescript-eslint/eslint-plugin": "4",
+    "@typescript-eslint/parser": "4",
+    "eslint": "7",
+    "eslint-config-airbnb": "^19.0.2",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.3.0"
+  }
+}
