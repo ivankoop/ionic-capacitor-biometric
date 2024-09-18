@@ -55,3 +55,24 @@ jobs:
           git tag ${{ env.VERSION }}
           git push https://${{ secrets.PAT }}@github.com/ivankoop/ionic-capacitor-biometric.git ${{ env.VERSION }}
           git push https://${{ secrets.PAT }}@github.com/ivankoop/ionic-capacitor-biometric.git --tags
+
+      - name: Get Previous Tag
+        id: previoustag
+        run: echo "PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${{ env.VERSION }}^)" >> $GITHUB_ENV
+
+      - name: Generate Release Notes
+        id: releasenotes
+        run: |
+          echo "RELEASE_NOTES=$(git log ${{ env.PREVIOUS_TAG }}..${{ env.VERSION }} --pretty=format:'* %s' --reverse)" >> $GITHUB_ENV
+          echo $RELEASE_NOTES
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: Release ${{ env.VERSION }}
+          body: ${{ env.RELEASE_NOTES }}
+          draft: false
+          prerelease: false
