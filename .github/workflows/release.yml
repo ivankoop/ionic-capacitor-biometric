@@ -63,8 +63,10 @@ jobs:
       - name: Generate Release Notes
         id: releasenotes
         run: |
-          echo "RELEASE_NOTES=$(git log ${{ env.PREVIOUS_TAG }}..${{ env.VERSION }} --pretty=format:'* %s' --reverse)" >> $GITHUB_ENV
-          echo $RELEASE_NOTES
+          RELEASE_NOTES=$(git log v1.0.6..v1.0.7 --pretty=format:"* %s" --reverse)
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "$RELEASE_NOTES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
