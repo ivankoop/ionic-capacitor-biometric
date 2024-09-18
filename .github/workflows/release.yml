@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - "release/*"
-    paths-ignore:
-      - "**"
-    types: [opened, synchronize, reopened]
 
 jobs:
   publish:
