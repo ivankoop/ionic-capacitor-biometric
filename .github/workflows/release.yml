@@ -1,14 +1,9 @@
 name: Release Pipeline
 
 on:
-  workflow_dispatch:
-    inputs:
-      npm_token:
-        description: "NPM Authentication Token"
-        required: true
-      version:
-        description: "Release version (e.g., 1.0.0)"
-        required: true
+  push:
+    branches:
+      - "release/*"
 
 jobs:
   publish:
@@ -22,9 +17,17 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18"
+          registry-url: "https://registry.npmjs.org/"
 
       - name: Install dependencies
         run: yarn install
+
+      - name: Extract version from branch name
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/heads/release/}" >> $GITHUB_ENV
+
+      - name: Update package.json version
+        run: npm version $VERSION --no-git-tag-version
 
       - name: Run Lint
         run: yarn lint
@@ -32,14 +35,20 @@ jobs:
       - name: Run Build
         run: yarn build
 
-      - name: Publish to npm
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # Use the npm token from the repository's secrets
-
-      - name: Create Release Tag
+      - name: Commit changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git tag ${{ github.event.inputs.version }}
-          git push origin ${{ github.event.inputs.version }}
+          git add package.json
+          git commit -m "chore: bump version to ${{ env.VERSION }}"
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Release Tag
+        run: |
+          git tag $VERSION
+          git push origin $VERSION
+          git push
