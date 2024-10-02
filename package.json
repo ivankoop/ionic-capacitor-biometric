@@ -4,10 +4,15 @@
   "description": "Ionic Capacitor Biometric authentication plugin",
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
-  "author": "Ivan Koop",
+  "author": {
+    "name": "Ivan Koop",
+    "email": "ivankoop3@gmail.com",
+    "url": "https://ivankoop.dev"
+  },
   "license": "MIT",
   "private": false,
   "dependencies": {
+    "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2"
   },
   "scripts": {
@@ -17,12 +22,30 @@
     "prepublishOnly": "yarn run build",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivankoop/ionic-capacitor-biometric.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ivankoop/ionic-capacitor-biometric/issues"
+  },
+  "keywords": [
+    "capacitor",
+    "plugin",
+    "native"
+  ],
   "files": [
-    "dist/**/*",
-    "ios/",
-    "android/",
+    "android/src/main/",
+    "android/build.gradle",
+    "dist/",
+    "ios/Sources",
+    "ios/Tests",
+    "Package.swift",
     "IonicCapacitorBiometric.podspec"
   ],
+  "peerDependencies": {
+    "@capacitor/core": "^6.0.0"
+  },
   "capacitor": {
     "ios": {
       "src": "ios"
@@ -32,8 +55,6 @@
     }
   },
   "devDependencies": {
-    "@capacitor/ios": "^6.1.2",
-    "@capacitor/android": "^6.1.2",
     "@typescript-eslint/eslint-plugin": "4",
     "@typescript-eslint/parser": "4",
     "eslint": "7",
