@@ -1,18 +1,15 @@
 import Foundation
 import Capacitor
 
-/**
- * Please read the Capacitor iOS Plugin Development Guide
- * here: https://capacitorjs.com/docs/plugins/ios
- */
-@objc(ExamplePlugin)
-public class ExamplePlugin: CAPPlugin, CAPBridgedPlugin {
-    public let identifier = "ExamplePlugin"
-    public let jsName = "Example"
+
+@objc(IonicCapacitorBiometricPlugin)
+public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "IonicCapacitorBiometricPlugin"
+    public let jsName = "IonicCapacitorBiometric"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "echo", returnType: CAPPluginReturnPromise)
     ]
-    private let implementation = Example()
+    private let implementation = IonicCapacitorBiometric()
 
     @objc func echo(_ call: CAPPluginCall) {
         let value = call.getString("value") ?? ""

@@ -1,11 +1,8 @@
 import { registerPlugin } from '@capacitor/core';
 
-import type { ExamplePlugin } from './definitions';
+import type { IonicCapacitorBiometricPlugin } from './definitions';
 
-const Example = registerPlugin<ExamplePlugin>('Example', {
-  // @ts-ignore
-  web: () => import('./web').then((m) => new m.ExampleWeb()),
-});
+const IonicCapacitorBiometric = registerPlugin<IonicCapacitorBiometricPlugin>('IonicCapacitorBiometric');
 
 export * from './definitions';
-export { Example };
+export { IonicCapacitorBiometric };
