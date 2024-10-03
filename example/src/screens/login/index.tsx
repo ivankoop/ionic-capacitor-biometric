@@ -15,7 +15,7 @@ import {
 } from '@ionic/react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Example } from "ionic-capacitor-biometric"
+import { IonicCapacitorBiometric } from 'ionic-capacitor-biometric';
 
 const fakeCredentials = {
   email: 'example@example.com',
@@ -40,12 +40,11 @@ function LoginScreen() {
     },
     validationSchema,
     onSubmit: (values) => {
-      
-      Example.echo({ value: 'Hello World' }).then((result) => {
-        console.log(result)
+      IonicCapacitorBiometric.echo({ value: 'Hello World' }).then((result) => {
+        console.log(result);
       }).catch((error) => {
-        console.error(error)
-      })
+        console.error(error);
+      });
 
       if (
         values.email === fakeCredentials.email
