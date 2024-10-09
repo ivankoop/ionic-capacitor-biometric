@@ -1,3 +1,6 @@
 export interface IonicCapacitorBiometricPlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
+  requestBiometricPermissions(): Promise<void>;
+  authenticate(): Promise<void>;
+  storeCredentials(options: { username: string; trustedToken: string }): Promise<void>;
+  retrieveCredentials(): Promise<{ username: string; trustedToken: string }>;
 }
