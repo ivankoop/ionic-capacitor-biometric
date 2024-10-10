@@ -5975,10 +5975,10 @@ internal-slot@^1.0.4, internal-slot@^1.0.7:
     hasown "^2.0.0"
     side-channel "^1.0.4"
 
-ionic-capacitor-biometric@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/ionic-capacitor-biometric/-/ionic-capacitor-biometric-1.1.1.tgz#3c23afdb0da8a8c787b50593c757067c3b124987"
-  integrity sha512-8uGfxL7D6TN1WzUT/P91+9NeeLZa5KFWZWBVUZmopiYIPnrEGs4yTDd4H0Wh+taBjlGvXNKUd9FOGJeoe0tpDg==
+ionic-capacitor-biometric@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/ionic-capacitor-biometric/-/ionic-capacitor-biometric-1.1.2.tgz#83040f6d6ac83421194054e5053f730f74745b5c"
+  integrity sha512-UQ2yn+BtNMaNCIl+8Psrf5s7xid/bGQSm3yw3QB1lWvPSVR/wS+JmWQCS7dsFMrldiSU+Qg0Fbdu2YSXX2PNDA==
   dependencies:
     "@capacitor/cli" "^6.1.2"
     "@capacitor/core" "^6.1.2"
