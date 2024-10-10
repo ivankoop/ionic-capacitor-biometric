@@ -1,6 +1,6 @@
 {
   "name": "ionic-capacitor-biometric",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Ionic Capacitor Biometric authentication plugin",
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
