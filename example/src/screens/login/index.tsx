@@ -12,6 +12,7 @@ import {
   useIonRouter,
   IonToolbar,
   IonHeader,
+  IonAlert,
 } from '@ionic/react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -25,6 +26,7 @@ const fakeCredentials = {
 function LoginScreen() {
   const router = useIonRouter();
   const [isCheckingAuth, setIsCheckingAuth] = React.useState(true);
+  const [showAlert, setShowAlert] = React.useState(false);
 
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -39,30 +41,41 @@ function LoginScreen() {
       password: '',
     },
     validationSchema,
-    onSubmit: (values) => {
-      IonicCapacitorBiometric.echo({ value: 'Hello World' }).then((result) => {
-        console.log(result);
-      }).catch((error) => {
-        console.error(error);
-      });
+    onSubmit: async (values) => {
+      try {
+        await IonicCapacitorBiometric.requestBiometricPermissions();
 
-      if (
-        values.email === fakeCredentials.email
-        && values.password === fakeCredentials.password
-      ) {
-        localStorage.setItem('isAuthenticated', 'true');
-        router.push('/home', 'root', 'replace');
+        const authResult = await IonicCapacitorBiometric.authenticate();
+        console.log('Biometric authentication successful', authResult);
+      } catch (error) {
+        console.error('Biometric authentication failed:', error);
       }
     },
   });
 
   React.useEffect(() => {
+    const checkStoredCredentials = async () => {
+      try {
+        const credentials = await IonicCapacitorBiometric.retrieveCredentials();
+        if (credentials) {
+          formik.setValues({
+            email: credentials.username,
+            password: '',
+          });
+        }
+      } catch (error) {
+        console.error('Failed to retrieve credentials:', error);
+      }
+    };
+
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
     if (isAuthenticated) {
       router.push('/home', 'root', 'replace');
+    } else {
+      checkStoredCredentials();
     }
     setIsCheckingAuth(false);
-  }, []);
+  }, [router]);
 
   if (isCheckingAuth) {
     return null;
@@ -101,11 +114,11 @@ function LoginScreen() {
                   </IonRow>
                   <IonRow>
                     {formik.touched.email && formik.errors.email && (
-                    <IonText color="danger">
-                      <small className="ion-padding-start">
-                        {formik.errors.email}
-                      </small>
-                    </IonText>
+                      <IonText color="danger">
+                        <small className="ion-padding-start">
+                          {formik.errors.email}
+                        </small>
+                      </IonText>
                     )}
                   </IonRow>
                 </IonGrid>
@@ -126,13 +139,11 @@ function LoginScreen() {
                   </IonRow>
                   <IonRow>
                     {formik.touched.password && formik.errors.password && (
-                    <IonText color="danger"
-                      className="ion-padding"
-                    >
-                      <small className="ion-padding-start">
-                        {formik.errors.password}
-                      </small>
-                    </IonText>
+                      <IonText color="danger">
+                        <small className="ion-padding-start">
+                          {formik.errors.password}
+                        </small>
+                      </IonText>
                     )}
                   </IonRow>
                 </IonGrid>
@@ -148,6 +159,13 @@ function LoginScreen() {
             </IonCol>
           </IonRow>
         </IonGrid>
+        <IonAlert
+          isOpen={showAlert}
+          onDidDismiss={() => setShowAlert(false)}
+          header="Authentication Failed"
+          message="Please check your credentials or biometric authentication."
+          buttons={['OK']}
+        />
       </IonContent>
     </IonPage>
   );

@@ -16,6 +16,9 @@
     "@capacitor/core": "^6.1.2"
   },
   "scripts": {
+    "verify": "npm run verify:ios && npm run verify:android",
+    "verify:ios": "xcodebuild -scheme IonicCapacitorBiometric -destination generic/platform=iOS",
+    "verify:android": "cd android && ./gradlew clean build test && cd ..",
     "build": "yarn run clean && tsc",
     "clean": "rm -rf ./dist",
     "watch": "tsc --watch",
