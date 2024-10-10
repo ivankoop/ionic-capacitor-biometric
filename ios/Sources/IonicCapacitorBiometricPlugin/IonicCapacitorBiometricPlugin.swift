@@ -24,7 +24,7 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func requestBiometricPermissions(_ call: CAPPluginCall) {
         implementation.requestBiometricPermissions { success, error in
-            if success {
+            if success.boolValue {
                 call.resolve()
             } else {
                 call.reject(error ?? "Unknown error requesting biometric permissions")
@@ -34,7 +34,7 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func authenticate(_ call: CAPPluginCall) {
         implementation.authenticate { success, error in
-            if success {
+            if success.boolValue {
                 call.resolve()
             } else {
                 call.reject(error ?? "Unknown error during authentication")
@@ -63,8 +63,8 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
         }
 
         call.resolve([
-            "username": credentials.username,
-            "trustedToken": credentials.trustedToken
+            "username": credentials["username"] ?? "",
+            "trustedToken": credentials["trustedToken"] ?? ""
         ])
     }
 }
