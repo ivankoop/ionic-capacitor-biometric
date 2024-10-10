@@ -1,6 +1,13 @@
+//
+//  IonicCapacitorBiometricPlugin.swift
+//  App
+//
+//  Created by ivan koop on 2024-02-16.
+//
+
+
 import Foundation
 import Capacitor
-import LocalAuthentication
 
 @objc(IonicCapacitorBiometricPlugin)
 public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
@@ -13,39 +20,24 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "retrieveCredentials", returnType: CAPPluginReturnPromise)
     ]
 
-    private let biometricAuthManager = BiometricAuthenticationManager()
-    private let keychainWrapper = KeychainWrapper(service: "IonicCapacitorBiometricService")
+    private let implementation = IonicCapacitorBiometric()
 
     @objc func requestBiometricPermissions(_ call: CAPPluginCall) {
-        let context = LAContext()
-        var error: NSError?
-
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Biometric permission is required for secure access.") { success, authenticationError in
-                DispatchQueue.main.async {
-                    if success {
-                        call.resolve()
-                    } else {
-                        call.reject("Failed to request biometric permissions")
-                    }
-                }
+        implementation.requestBiometricPermissions { success, error in
+            if success {
+                call.resolve()
+            } else {
+                call.reject(error ?? "Unknown error requesting biometric permissions")
             }
-        } else {
-            let reason = error?.localizedDescription ?? "Biometrics not available or not enrolled."
-            call.reject(reason)
         }
     }
 
     @objc func authenticate(_ call: CAPPluginCall) {
-        biometricAuthManager.authenticateUser { success, error in
-            DispatchQueue.main.async {
-                if success {
-                    call.resolve()
-                } else if let error = error {
-                    call.reject(error.localizedDescription)
-                } else {
-                    call.reject("Failed to authenticate")
-                }
+        implementation.authenticate { success, error in
+            if success {
+                call.resolve()
+            } else {
+                call.reject(error ?? "Unknown error during authentication")
             }
         }
     }
@@ -56,7 +48,7 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
             return
         }
 
-        let saved = keychainWrapper.save(username: username, trustedToken: trustedToken)
+        let saved = implementation.storeCredentials(username: username, trustedToken: trustedToken)
         if saved {
             call.resolve()
         } else {
@@ -65,7 +57,7 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     @objc func retrieveCredentials(_ call: CAPPluginCall) {
-        guard let credentials = keychainWrapper.retrieveCredentials() else {
+        guard let credentials = implementation.retrieveCredentials() else {
             call.reject("Failed to retrieve credentials")
             return
         }
