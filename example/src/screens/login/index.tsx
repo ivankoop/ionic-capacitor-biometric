@@ -25,7 +25,6 @@ const fakeCredentials = {
 
 function LoginScreen() {
   const router = useIonRouter();
-  const [isCheckingAuth, setIsCheckingAuth] = React.useState(true);
   const [showAlert, setShowAlert] = React.useState(false);
 
   const validationSchema = Yup.object({
@@ -35,6 +34,11 @@ function LoginScreen() {
     password: Yup.string().required('Password is required.'),
   });
 
+  const onAuthSuccess = React.useCallback(async () => {
+    localStorage.setItem('isAuthenticated', 'true');
+    router.push('/home', 'root', 'replace');
+  }, [router]);
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -42,44 +46,23 @@ function LoginScreen() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      try {
-        await IonicCapacitorBiometric.requestBiometricPermissions();
+      if (values.email === fakeCredentials.email && values.password === fakeCredentials.password) {
+        try {
+          await IonicCapacitorBiometric.requestBiometricPermissions();
+          await IonicCapacitorBiometric.storeCredentials({
+            username: values.email,
+            trustedToken: fakeCredentials.password,
+          });
+          onAuthSuccess();
+        } catch (error) {
+          console.error('Failed on Biometric:', error);
 
-        const authResult = await IonicCapacitorBiometric.authenticate();
-        console.log('Biometric authentication successful', authResult);
-      } catch (error) {
-        console.error('Biometric authentication failed:', error);
+          // We can still proceed with the login even if the biometric storage fails
+          onAuthSuccess();
+        }
       }
     },
   });
-
-  React.useEffect(() => {
-    const checkStoredCredentials = async () => {
-      try {
-        const credentials = await IonicCapacitorBiometric.retrieveCredentials();
-        if (credentials) {
-          formik.setValues({
-            email: credentials.username,
-            password: '',
-          });
-        }
-      } catch (error) {
-        console.error('Failed to retrieve credentials:', error);
-      }
-    };
-
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    if (isAuthenticated) {
-      router.push('/home', 'root', 'replace');
-    } else {
-      checkStoredCredentials();
-    }
-    setIsCheckingAuth(false);
-  }, [router]);
-
-  if (isCheckingAuth) {
-    return null;
-  }
 
   return (
     <IonPage>

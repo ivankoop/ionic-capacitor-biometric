@@ -14,6 +14,7 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "IonicCapacitorBiometricPlugin"
     public let jsName = "IonicCapacitorBiometric"
     public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "isAvailable", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "requestBiometricPermissions", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "authenticate", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "storeCredentials", returnType: CAPPluginReturnPromise),
@@ -21,6 +22,16 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
     ]
 
     private let implementation = IonicCapacitorBiometric()
+
+    @objc func isAvailable(_ call: CAPPluginCall) {
+        implementation.isAvailable { success, error in
+            if success.boolValue {
+                call.resolve()
+            } else {
+                call.reject(error ?? "Biometric authentication not available or rejected.")
+            }
+        }
+    }
 
     @objc func requestBiometricPermissions(_ call: CAPPluginCall) {
         implementation.requestBiometricPermissions { success, error in
@@ -43,7 +54,8 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     @objc func storeCredentials(_ call: CAPPluginCall) {
-        guard let username = call.getString("username"), let trustedToken = call.getString("trustedToken") else {
+        guard let username = call.getString("username"),
+              let trustedToken = call.getString("trustedToken") else {
             call.reject("Username or trustedToken not provided")
             return
         }

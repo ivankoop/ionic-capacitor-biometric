@@ -11,6 +11,18 @@ import LocalAuthentication
 @objc public class IonicCapacitorBiometric: NSObject {
     private let keychainWrapper = KeychainWrapper(service: "IonicCapacitorBiometricService")
 
+    @objc public func isAvailable(completion: @escaping (NSNumber, String?) -> Void) {
+        let context = LAContext()
+        var error: NSError?
+
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            completion(NSNumber(value: true), nil)
+        } else {
+            let reason = error?.localizedDescription ?? "Biometric authentication is not available or the user rejected it."
+            completion(NSNumber(value: false), reason)
+        }
+    }
+
     @objc public func requestBiometricPermissions(completion: @escaping (NSNumber, String?) -> Void) {
         let context = LAContext()
         var error: NSError?
@@ -60,7 +72,7 @@ import LocalAuthentication
         guard let credentials = keychainWrapper.retrieveCredentials() else {
             return nil
         }
-        
+
         return ["username": credentials.username, "trustedToken": credentials.trustedToken]
     }
 }

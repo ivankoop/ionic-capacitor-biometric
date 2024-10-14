@@ -13,6 +13,7 @@ import {
   useIonRouter,
 } from '@ionic/react';
 import { logOutOutline } from 'ionicons/icons';
+import { IonicCapacitorBiometric } from 'ionic-capacitor-biometric';
 
 function HomeScreen() {
   const router = useIonRouter();
