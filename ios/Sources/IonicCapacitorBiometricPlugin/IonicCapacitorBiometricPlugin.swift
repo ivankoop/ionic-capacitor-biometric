@@ -26,9 +26,9 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func isAvailable(_ call: CAPPluginCall) {
         implementation.isAvailable { success, error in
             if success.boolValue {
-                call.resolve()
+                call.resolve(["success": true, "message": "Biometric authentication is available"])
             } else {
-                call.reject(error ?? "Biometric authentication not available or rejected.")
+                call.resolve(["success": false, "message": "Biometric authentication is not available"])
             }
         }
     }
@@ -36,9 +36,9 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func requestBiometricPermissions(_ call: CAPPluginCall) {
         implementation.requestBiometricPermissions { success, error in
             if success.boolValue {
-                call.resolve()
+                call.resolve(["success": true, "message": "Biometric permissions granted"])
             } else {
-                call.reject(error ?? "Unknown error requesting biometric permissions")
+                call.resolve(["success": false, "message": error ?? "Unknown error requesting biometric permissions"])
             }
         }
     }
@@ -46,9 +46,9 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func authenticate(_ call: CAPPluginCall) {
         implementation.authenticate { success, error in
             if success.boolValue {
-                call.resolve()
+                call.resolve(["success": true, "message": "Authentication successful"])
             } else {
-                call.reject(error ?? "Unknown error during authentication")
+                call.resolve(["success": false, "message": error ?? "Unknown error during authentication"])
             }
         }
     }
@@ -56,27 +56,26 @@ public class IonicCapacitorBiometricPlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func storeCredentials(_ call: CAPPluginCall) {
         guard let username = call.getString("username"),
               let trustedToken = call.getString("trustedToken") else {
-            call.reject("Username or trustedToken not provided")
+            call.resolve(["success": false, "message": "Username or trustedToken not provided"])
             return
         }
 
         let saved = implementation.storeCredentials(username: username, trustedToken: trustedToken)
         if saved {
-            call.resolve()
+            call.resolve(["success": true, "message": "Credentials stored successfully"])
         } else {
-            call.reject("Failed to store credentials")
+            call.resolve(["success": false, "message": "Failed to store credentials"])
         }
     }
 
     @objc func retrieveCredentials(_ call: CAPPluginCall) {
-        guard let credentials = implementation.retrieveCredentials() else {
-            call.reject("Failed to retrieve credentials")
+        guard let credentials = implementation.retrieveCredentials(),
+              let username = credentials["username"],
+              let trustedToken = credentials["trustedToken"] else {
+            call.resolve(["success": false, "message": "Failed to retrieve credentials"])
             return
         }
 
-        call.resolve([
-            "username": credentials["username"] ?? "",
-            "trustedToken": credentials["trustedToken"] ?? ""
-        ])
+        call.resolve(["success": true, "message": "Credentials retrieved successfully", "username": username, "trustedToken": trustedToken])
     }
 }

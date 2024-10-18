@@ -64,6 +64,16 @@ function LoginScreen() {
     },
   });
 
+  const isBiometricAvailable = React.useCallback(async () => {
+    const isAvailable = await IonicCapacitorBiometric.isAvailable();
+
+    console.log('Biometric is available:', isAvailable);
+  }, []);
+
+  React.useEffect(() => {
+    isBiometricAvailable();
+  }, []);
+
   return (
     <IonPage>
       <IonHeader>
