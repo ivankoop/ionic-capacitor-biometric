@@ -48,11 +48,14 @@ function LoginScreen() {
     onSubmit: async (values) => {
       if (values.email === fakeCredentials.email && values.password === fakeCredentials.password) {
         try {
-          await IonicCapacitorBiometric.requestBiometricPermissions();
-          await IonicCapacitorBiometric.storeCredentials({
-            username: values.email,
-            trustedToken: fakeCredentials.password,
-          });
+          const request = await IonicCapacitorBiometric.requestBiometricPermissions();
+          if (request.success) {
+            const store = await IonicCapacitorBiometric.storeCredentials({
+              username: values.email,
+              trustedToken: fakeCredentials.password,
+            });
+          }
+
           onAuthSuccess();
         } catch (error) {
           console.error('Failed on Biometric:', error);
