@@ -18,6 +18,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { IonicCapacitorBiometric } from 'ionic-capacitor-biometric';
 
+// This is a fake set of credentials that we will use to authenticate the user
 const fakeCredentials = {
   email: 'example@example.com',
   password: 'password',
@@ -26,6 +27,7 @@ const fakeCredentials = {
 function LoginScreen() {
   const router = useIonRouter();
   const [showAlert, setShowAlert] = React.useState(false);
+  const [biometricAvailable, setBiometricAvailable] = React.useState(false);
 
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -48,14 +50,11 @@ function LoginScreen() {
     onSubmit: async (values) => {
       if (values.email === fakeCredentials.email && values.password === fakeCredentials.password) {
         try {
-          const request = await IonicCapacitorBiometric.requestBiometricPermissions();
-          if (request.success) {
-            const store = await IonicCapacitorBiometric.storeCredentials({
-              username: values.email,
-              trustedToken: fakeCredentials.password,
-            });
-          }
-
+          await IonicCapacitorBiometric.requestBiometricPermissions();
+          await IonicCapacitorBiometric.storeCredentials({
+            username: values.email,
+            trustedToken: fakeCredentials.password,
+          });
           onAuthSuccess();
         } catch (error) {
           console.error('Failed on Biometric:', error);
@@ -68,10 +67,30 @@ function LoginScreen() {
   });
 
   const isBiometricAvailable = React.useCallback(async () => {
-    const isAvailable = await IonicCapacitorBiometric.isAvailable();
-
-    console.log('Biometric is available:', isAvailable);
+    try {
+      await IonicCapacitorBiometric.isAvailable();
+      setBiometricAvailable(true);
+    } catch (error) {
+      console.error('Biometric is not available:', error);
+      setBiometricAvailable(false);
+    }
   }, []);
+
+  const onBiometricAuth = React.useCallback(async () => {
+    try {
+      await IonicCapacitorBiometric.requestBiometricPermissions();
+      const { username, trustedToken } = await IonicCapacitorBiometric.retrieveCredentials();
+
+      if (username === fakeCredentials.email && trustedToken === fakeCredentials.password) {
+        onAuthSuccess();
+      } else {
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Failed on Biometric Auth:', error);
+      setShowAlert(true);
+    }
+  }, [biometricAvailable]);
 
   React.useEffect(() => {
     isBiometricAvailable();
@@ -106,6 +125,11 @@ function LoginScreen() {
                       value={formik.values.email}
                       onIonChange={formik.handleChange}
                       onBlur={formik.handleBlur}
+                      onClick={() => {
+                        if (biometricAvailable) {
+                          onBiometricAuth();
+                        }
+                      }}
                     />
                   </IonRow>
                   <IonRow>

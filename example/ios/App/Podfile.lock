@@ -2,7 +2,7 @@ PODS:
   - Capacitor (6.1.2):
     - CapacitorCordova
   - CapacitorCordova (6.1.2)
-  - IonicCapacitorBiometric (1.1.8):
+  - IonicCapacitorBiometric (1.2.0):
     - Capacitor
 
 DEPENDENCIES:
@@ -21,7 +21,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Capacitor: 679f9673fdf30597493a6362a5d5bf233d46abc2
   CapacitorCordova: f48c89f96c319101cd2f0ce8a2b7449b5fb8b3dd
-  IonicCapacitorBiometric: e02a76e48cef0ad389d27e8e789f4d7098c320ff
+  IonicCapacitorBiometric: ea119961eeab5ea562f8507da3b6230f0c318644
 
 PODFILE CHECKSUM: 5cf015763f63092ca29e02530dd19e6d083174d7
 
